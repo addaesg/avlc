@@ -2,6 +2,7 @@ import pygame
 import game.Color as Color
 
 class Window:
+
     def __init__(self, width, height, title, background=Color.BLACK):
         self.width = width
         self.height = height
@@ -25,14 +26,24 @@ class Window:
         self.screen_.fill(self.background)
 
     def update(self):
+        if(not self.is_open()):
+            self.close()
+            return
         pygame.display.update()
         self.clear()
+
+    def close(self):
+        self.isOpen_ = False
+        pygame.quit()
+        exit()
 
     def pool_events(self):
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
+                self.isOpen_ = False
+            if event.type == pygame.KEYDOWN:
+               if event.key == pygame.K_ESCAPE:
+                   self.isOpen_ = False
         return events
         

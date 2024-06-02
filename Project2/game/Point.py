@@ -13,6 +13,7 @@ class Point:
 
     def distTo(self, point):
         return ((self.x - point.x)**2 + (self.y - point.y)**2)
+    
     def pos(self):
         return (self.x, self.y)
     
@@ -31,7 +32,6 @@ class ControlPoints:
         self.point_color = point_color
         self.selectedPoint = None
         self.pressing = False
-
 
     def draw(self, screen):
         for point in self.points:
@@ -54,8 +54,6 @@ class ControlPoints:
         if(p.isCloseTo(point, 3)):
             return point
         return None
-    
-
 
     def handle_events(self, events):
         x, y = pygame.mouse.get_pos()
@@ -76,9 +74,7 @@ class ControlPoints:
                 if(closestPoint):
                     self.selectedPoint = closestPoint
                 else:
-                    self.addPoint(x, y)
-
-                    
+                    self.addPoint(x, y)  
             
             if event.type == pygame.MOUSEMOTION:
                 if self.pressing and self.selectedPoint:
@@ -90,7 +86,7 @@ class ControlPoints:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_c:
                     self.points = []
-                if event.key == pygame.K_BACKSPACE:
+                if event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
                     if self.selectedPoint:
                         self.removePoint(self.selectedPoint)
                         self.selectedPoint = None
