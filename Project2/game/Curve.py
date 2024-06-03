@@ -22,7 +22,7 @@ class InterpolatedCurve:
             for i in range(n+1):
                 control = self.controlPoints[i]
                 control = np.array([control.x, control.y])
-                p = [1, 1]       
+                p = [1, 1]
                 for j in range(n+1):
                     if i != j:
                         p[0] *= t - j
@@ -36,7 +36,31 @@ class InterpolatedCurve:
         self.calculate()
         for point in self.samples:
             point.draw(screen)
-     
+
+class MonomialInterpolatedCurve:
+    def __init__(self, controlPoints, color=Color.WHITE, width=10):
+        self.controlPoints = controlPoints
+        self.color = color
+        self.thickness = width
+        self.samples = []
+        self.dated = True
+
+    ## Monomial Interpolation
+    def calculate(self):
+        numberOfPoints = len(self.controlPoints)
+        exponents = np.arange(numberOfPoints)
+        matrix = np.empty((0, numberOfPoints))
+        for p in self.controlPoints:
+            repeatedX = np.repeat(p.x, numberOfPoints)
+            matrixRow = [np.power(repeatedX, exponents)]
+            matrix = np.append(matrix, matrixRow, axis=0)
+
+        print(matrix)
+
+    def draw(self, screen):
+        self.calculate()
+        for point in self.samples:
+            point.draw(screen)
 
 class BezierCurve:
     def __init__(self, controlPoints, color=Color.WHITE, width=10, samples=10000):
@@ -46,7 +70,7 @@ class BezierCurve:
         self.samples = []
         self.sampleCount = samples
         self.dated = True
-    
+
     def calculate(self):
         self.samples = []
         n = len(self.controlPoints) - 1
