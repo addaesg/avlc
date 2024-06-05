@@ -7,7 +7,7 @@ from game.Caption import Caption, BoxCaption
 from game.LinearEquation import linear_solve
 from game.Render import Aura
 
-class InterpolatedCurve:
+class LagrangeCurve:
     def __init__(self, controlPoints, color=Color.WHITE, width=10, caption=BoxCaption()):
         self.controlPoints = controlPoints
         self.color = color

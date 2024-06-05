@@ -1,10 +1,6 @@
 import pygame
 from game.Point import Point, ControlPoints
 import game.Color as Color
-import numpy as np
-import math
-from game.Caption import Caption, BoxCaption
-from game.LinearEquation import linear_solve
 
 
 class Aura:

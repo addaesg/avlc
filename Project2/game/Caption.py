@@ -21,10 +21,8 @@ class Caption:
         pygame.draw.rect(screen, Color.WHITE, (self.position[0] - self.size, self.position[1] - self.size/4, self.size, self.size), 1)
         text = font.render(self.text, True, Color.WHITE)
         screen.blit(text, self.position)
-        
-        
 
-
+        
 
 
 class BoxCaption:
