@@ -3,68 +3,81 @@ import game.Color as Color
 import numpy as np
 
 
-def lup_decomp(A):
+def plu(A):
+    
+    #Get the number of rows
     n = A.shape[0]
-    if n == 1:
-        L = np.array([[1]])
-        U = A.copy()
-        P = np.array([[1]])
-        return (L, U, P)
-
-    if A.size == 0:
-        raise ValueError("Matrix A is empty")
-
-    i = np.argmax(np.abs(A[:, 0]))
-    A_bar = np.vstack([A[i, :], A[:i, :], A[(i + 1):, :]])
-
-    A_bar11 = A_bar[0, 0]
-    A_bar12 = A_bar[0, 1:]
-    A_bar21 = A_bar[1:, 0]
-    A_bar22 = A_bar[1:, 1:]
-
-    if A_bar22.size == 0:
-        S22 = A_bar22
-        L22, U22, P22 = np.array([[]]), np.array([[]]), np.array([[]])
-    else:
-        S22 = A_bar22 - np.dot(A_bar21[:, np.newaxis], A_bar12[np.newaxis, :]) / A_bar11
-        (L22, U22, P22) = lup_decomp(S22)
-
-    L11 = np.array([[1]])
-    U11 = np.array([[A_bar11]])
-
-    L12 = np.zeros((1, n-1))
-    U12 = A_bar12.reshape(1, -1)
-
-    if A_bar21.size > 0:
-        L21 = (np.dot(P22, A_bar21) / A_bar11).reshape(-1, 1)
-    else:
-        L21 = np.zeros((n-1, 1))
-    U21 = np.zeros((n-1, 1))
-
-    L = np.block([[L11, L12], [L21, L22]])
-    U = np.block([[U11, U12], [U21, U22]])
-
-    P_top = np.hstack([np.zeros((1, i)), np.ones((1, 1)), np.zeros((1, n-i-1))])
-    P_bottom_left = P22[:, :(i)] if i > 0 else np.zeros((n-1, 0))
-    P_bottom_right = P22[:, i:] if i < n-1 else np.zeros((n-1, 0))
-    P_bottom = np.hstack([P_bottom_left, np.zeros((n-1, 1)), P_bottom_right])
-    P = np.vstack([P_top, P_bottom])
-
-    return (L, U, P)
+    
+    #Allocate space for P, L, and U
+    U = A.copy()
+    L = np.eye(n, dtype=np.double)
+    P = np.eye(n, dtype=np.double)
+    
+    #Loop over rows
+    for i in range(n):
+        
+        #Permute rows if needed
+        for k in range(i, n): 
+            if ~np.isclose(U[i, i], 0.0):
+                break
+            U[[k, k+1]] = U[[k+1, k]]
+            P[[k, k+1]] = P[[k+1, k]]
+            
+        #Eliminate entries below i with row 
+        #operations on U and #reverse the row 
+        #operations to manipulate L
+        factor = U[i+1:, i] / U[i, i]
+        L[i+1:, i] = factor
+        U[i+1:] -= factor[:, np.newaxis] * U[i]
+        
+    return P, L, U
 
 
-def fwd_sub(L, c):
-    result = np.zeros_like(c, dtype=np.double)
-    for i in range(len(c)):
-        result[i] = c[i] - np.dot(L[i, :i],  result[:i])
-    return result 
 
-def bwd_sub(U, c):
-    result = np.zeros_like(c, dtype=np.double)
-    for i in range(len(c)-1, -1, -1):
-        result[i] = (c[i] - np.dot(U[i, i+1:], result[i+1:])) / U[i, i]
-    return result
+def forward_substitution(L, b):
+    
+    #Get number of rows
+    n = L.shape[0]
+    
+    #Allocating space for the solution vector
+    y = np.zeros_like(b, dtype=np.double);
+    
+    #Here we perform the forward-substitution.  
+    #Initializing  with the first row.
+    y[0] = b[0] / L[0, 0]
+    
+    #Looping over rows in reverse (from the bottom  up),
+    #starting with the second to last row, because  the 
+    #last row solve was completed in the last step.
+    for i in range(1, n):
+        y[i] = (b[i] - np.dot(L[i,:i], y[:i])) / L[i,i]
+        
+    return y
 
-def linear_solve(A, b):
-    (L, U, P) = lup_decomp(A)
-    return bwd_sub(U, fwd_sub(L, np.dot(P, b)))
+
+def back_substitution(U, y):
+    
+    #Number of rows
+    n = U.shape[0]
+    
+    #Allocating space for the solution vector
+    x = np.zeros_like(y, dtype=np.double);
+
+    #Here we perform the back-substitution.  
+    #Initializing with the last row.
+    x[-1] = y[-1] / U[-1, -1]
+    
+    #Looping over rows in reverse (from the bottom up), 
+    #starting with the second to last row, because the 
+    #last row solve was completed in the last step.
+    for i in range(n-2, -1, -1):
+        x[i] = (y[i] - np.dot(U[i,i:], x[i:])) / U[i,i]
+        
+    return x
+
+
+def plu_solve(A, b):
+    P, L, U = plu(A)
+    y = forward_substitution(L, np.dot(P, b))
+    return back_substitution(U, y)
+

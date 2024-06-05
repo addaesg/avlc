@@ -2,7 +2,7 @@ from game.all import *
 
 
 def main():
-    (width, height) = (800, 600)
+    (width, height) = (1200, 500)
     backgroundColor = Color.BLACK
     window = Window(width, height, "Curvinha Fellas", backgroundColor)
 
@@ -16,13 +16,12 @@ def main():
         events = window.pool_events()
         controlPoints.handle_events(events)
         
-        
         #window.draw(bezierCurve)
         #window.draw(lagradgeCurve)
         window.draw(monomialCurve)
 
+
         window.draw(controlPoints)
-        
         window.draw(captions)
         window.update()    
     

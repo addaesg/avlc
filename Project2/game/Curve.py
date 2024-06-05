@@ -4,9 +4,55 @@ import game.Color as Color
 import numpy as np
 import math
 from game.Caption import Caption, BoxCaption
-from game.LinearEquation import linear_solve
+from game.LinearEquation import plu_solve
 from game.Render import Aura
 
+
+class MonomialInterpolatedCurve:
+    def __init__(self, controlPoints, color=Color.WHITE, width=10, caption=BoxCaption()):
+        self.controlPoints = controlPoints
+        self.color = color
+        self.thickness = width
+        self.samples = []
+        self.dated = True
+        self.caption = caption
+        self.caption.add_caption("Monomial", self.color)
+        self.render = Aura(self.samples, self.thickness)
+
+    ## Monomial Interpolation
+    def calculate(self):
+        numberOfPoints = len(self.controlPoints)
+        if(numberOfPoints == 0):
+            return
+        exponents = np.arange(numberOfPoints)
+        matrix = np.zeros((numberOfPoints, numberOfPoints))
+        column_vector_Y = np.zeros(numberOfPoints)
+        for idx, p in enumerate(self.controlPoints):
+            matrix[idx, :] = np.power(p.x, exponents)
+            column_vector_Y[idx] = p.y
+        
+        coeficients = plu_solve(matrix, column_vector_Y)
+        # Determine the range for interpolation
+        # x_min = min(p.x for p in self.controlPoints)
+        # x_max = max(p.x for p in self.controlPoints)
+        self.samples.clear()
+        for i in range(1, len(self.controlPoints)):
+            x0 = self.controlPoints[i-1].x
+            x1 = self.controlPoints[i].x
+            xs = np.linspace(x0, x1, num=100)
+            for x in xs:
+                y = sum(coeficients[j] * x**j for j in range(numberOfPoints))
+                self.samples.append(Point(x, y, self.thickness, self.color))
+        
+
+    def draw(self, screen):
+        self.calculate()
+        self.render.draw(screen, self.samples)
+
+
+
+## some other curves
+## nice
 class LagrangeCurve:
     def __init__(self, controlPoints, color=Color.WHITE, width=10, caption=BoxCaption()):
         self.controlPoints = controlPoints
@@ -42,48 +88,7 @@ class LagrangeCurve:
 
 
 
-class MonomialInterpolatedCurve:
-    def __init__(self, controlPoints, color=Color.WHITE, width=10, caption=BoxCaption()):
-        self.controlPoints = controlPoints
-        self.color = color
-        self.thickness = width
-        self.samples = []
-        self.dated = True
-        self.caption = caption
-        self.caption.add_caption("Monomial", self.color)
-        self.render = Aura(self.samples, self.thickness)
 
-    ## Monomial Interpolation
-    def calculate(self):
-        numberOfPoints = len(self.controlPoints)
-        if(numberOfPoints == 0):
-            return
-        exponents = np.arange(numberOfPoints)
-        matrix = np.zeros((numberOfPoints, numberOfPoints))
-        column_vector_Y = np.zeros(numberOfPoints)
-        for idx, p in enumerate(self.controlPoints):
-            matrix[idx, :] = np.power(p.x, exponents)
-            column_vector_Y[idx] = p.y
-        
-        coeficients = linear_solve(matrix, column_vector_Y.transpose())
-        # Determine the range for interpolation
-        x_min = min(p.x for p in self.controlPoints)
-        x_max = max(p.x for p in self.controlPoints)
-        
-        # Create a range of x values for interpolation
-        x_values = np.linspace(x_min, x_max, num=1000)  # Change '100' to desired number of interpolation points
-        
-        # Evaluate the polynomial at each x value
-        y_values = np.zeros_like(x_values)
-        self.samples = []
-        for i, x in enumerate(x_values):
-            y_values[i] = sum(coeficients[j] * x**j for j in range(numberOfPoints))
-            self.samples.append(Point(x, y_values[i], self.thickness, self.color))
-        
-
-    def draw(self, screen):
-        self.calculate()
-        self.render.draw(screen, self.samples)
 
 class BezierCurve:
     def __init__(self, controlPoints, color=Color.WHITE, width=10, caption=BoxCaption()):
