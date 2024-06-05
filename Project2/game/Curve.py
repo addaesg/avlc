@@ -34,7 +34,7 @@ class MonomialInterpolatedCurve:
         self.samples.clear()
         self.controlPoints.sort(key=lambda p: p.x)
         try:
-            coeficients = plu_solve(matrix, column_vector_Y.transpose())
+            coeficients = plu_solve(matrix, column_vector_Y)
             for x in np.arange(self.controlPoints[0].x, self.controlPoints[-1].x, 0.5, dtype=np.float64):
                 y =  np.sum(np.power(x, exponents) * coeficients, dtype=np.float64)
                 self.samples.append(Point(x, y, self.thickness, self.color))
