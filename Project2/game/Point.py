@@ -1,6 +1,6 @@
 import pygame
 import game.Color as Color
-
+from game.Caption import BoxCaption
 class Point: 
     def __init__(self, x, y, size = 15, color=Color.CYAN):
         self.x = x
@@ -26,16 +26,22 @@ class Point:
 
 
 class ControlPoints: 
-    def __init__(self, points, point_size=15, point_color=Color.CYAN):
+    def __init__(self, points, point_size=15, point_color=Color.CYAN, captions=BoxCaption()):
         self.points = points
         self.point_size = point_size
         self.point_color = point_color
         self.selectedPoint = None
         self.pressing = False
+        self.captions = captions
+        self.captions.add_caption("Control Points", self.point_color)
 
     def draw(self, screen):
         for point in self.points:
             point.draw(screen)
+            #draw white aura around the point
+            pygame.draw.circle(screen, Color.WHITE, point.pos(), point.size_ + 2, 2)
+            
+
 
     def addPoint(self, x, y):
         self.selectedPoint = Point(x, y, self.point_size , self.point_color)
@@ -86,7 +92,7 @@ class ControlPoints:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_c:
                     self.points = []
-                if event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
+                if event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE or event.key == pygame.K_d:
                     if self.selectedPoint:
                         self.removePoint(self.selectedPoint)
                         self.selectedPoint = None
