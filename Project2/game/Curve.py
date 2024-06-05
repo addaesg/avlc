@@ -24,26 +24,20 @@ class MonomialInterpolatedCurve:
         numberOfPoints = len(self.controlPoints)
         if(numberOfPoints == 0):
             return
-        exponents = np.arange(numberOfPoints)
-        matrix = np.zeros((numberOfPoints, numberOfPoints))
+        exponents = np.arange(numberOfPoints, dtype=float)
+        matrix = np.zeros((numberOfPoints, numberOfPoints), dtype=float)
         column_vector_Y = np.zeros(numberOfPoints)
         for idx, p in enumerate(self.controlPoints):
             matrix[idx, :] = np.power(p.x, exponents)
             column_vector_Y[idx] = p.y
         
-        coeficients = plu_solve(matrix, column_vector_Y)
-        # Determine the range for interpolation
-        # x_min = min(p.x for p in self.controlPoints)
-        # x_max = max(p.x for p in self.controlPoints)
+        coeficients = plu_solve(matrix, column_vector_Y.transpose())
+
         self.samples.clear()
-        for i in range(1, len(self.controlPoints)):
-            x0 = self.controlPoints[i-1].x
-            x1 = self.controlPoints[i].x
-            xs = np.linspace(x0, x1, num=100)
-            for x in xs:
-                y = sum(coeficients[j] * x**j for j in range(numberOfPoints))
-                self.samples.append(Point(x, y, self.thickness, self.color))
-        
+        self.controlPoints.sort(key=lambda p: p.x)
+        for x in np.arange(self.controlPoints[0].x, self.controlPoints[-1].x, 0.5, dtype=float):
+            y =  np.sum(np.power(x, exponents) * coeficients, dtype=float)
+            self.samples.append(Point(x, y, self.thickness, self.color))
 
     def draw(self, screen):
         self.calculate()
