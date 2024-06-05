@@ -1,12 +1,4 @@
-import contextlib
-with contextlib.redirect_stdout(None):
-    import pygame
-from game.Point import Point, ControlPoints
-from game.Window import Window
-from game.Curve import BezierCurve, InterpolatedCurve, MonomialInterpolatedCurve
-import game.Color as Color
-from sys import exit
-import numpy as np
+from game.all import *
 
 
 def main():
@@ -14,19 +6,24 @@ def main():
     backgroundColor = Color.BLACK
     window = Window(width, height, "Curvinha Fellas", backgroundColor)
 
-    controlPoints = ControlPoints([], 11, Color.BLUE)
-    bezierCurve = BezierCurve(controlPoints.points, Color.CYAN, 4)
-    lagradgeCurve = InterpolatedCurve(controlPoints.points, Color.MAGENTA, 4)
-    monomialCurve = MonomialInterpolatedCurve(controlPoints.points, Color.YELLOW, 4)
+    captions = BoxCaption()
+    controlPoints = ControlPoints([], 5, Color.BLACK, captions)
+    #bezierCurve = BezierCurve(controlPoints.points, Color.DARK_CYAN, 3, captions)
+    #lagradgeCurve = InterpolatedCurve(controlPoints.points, Color.DARK_CYAN, 3, captions)
+    monomialCurve = MonomialInterpolatedCurve(controlPoints.points, Color.DARK_GREY, 3, captions)
 
     while window.is_open():
         events = window.pool_events()
         controlPoints.handle_events(events)
         
-        window.draw(controlPoints)
-        # window.draw(bezierCurve)
-        # window.draw(lagradgeCurve)
+        
+        #window.draw(bezierCurve)
+        #window.draw(lagradgeCurve)
         window.draw(monomialCurve)
+
+        window.draw(controlPoints)
+        
+        window.draw(captions)
         window.update()    
     
 

@@ -1,8 +1,8 @@
 import pygame
 import game.Color as Color
 
-class Window:
 
+class Window:
     def __init__(self, width, height, title, background=Color.BLACK):
         self.width = width
         self.height = height
@@ -23,12 +23,15 @@ class Window:
         thing.draw(self.screen())
 
     def clear(self):
+
         self.screen_.fill(self.background)
 
+        
     def update(self):
         if(not self.is_open()):
             self.close()
             return
+        
         pygame.display.update()
         self.clear()
 
