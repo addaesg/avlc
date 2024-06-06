@@ -2,7 +2,7 @@ from game.all import *
 
 
 def main():
-    (width, height) = (1200, 500)
+    (width, height) = (1200, 600)
     backgroundColor = Color.BLACK
     window = Window(width, height, "Curvinha Fellas", backgroundColor)
 
@@ -10,7 +10,10 @@ def main():
     controlPoints = ControlPoints([], 5, Color.BLACK, captions)
     #bezierCurve = BezierCurve(controlPoints.points, Color.DARK_CYAN, 3, captions)
     #lagradgeCurve = LagrangeCurve(controlPoints.points, Color.DARK_CYAN, 3, captions)
-    monomialCurve = MonomialInterpolatedCurve(controlPoints.points, Color.DARK_GREY, 3, captions)
+    thickness = 3
+    sample_ratio = 0.5
+    monomialCurve = MonomialInterpolatedCurve(controlPoints.points, Color.DARK_GREY, 
+                                              thickness, captions, sample_ratio)
 
     while window.is_open():
         events = window.pool_events()

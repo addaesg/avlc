@@ -9,7 +9,7 @@ from game.Render import Aura
 
 
 class MonomialInterpolatedCurve:
-    def __init__(self, controlPoints, color=Color.WHITE, width=10, caption=BoxCaption()):
+    def __init__(self, controlPoints, color=Color.WHITE, width=10, caption=BoxCaption(), sample_ratio=0.5):
         self.controlPoints = controlPoints
         self.color = color
         self.thickness = width
@@ -18,7 +18,7 @@ class MonomialInterpolatedCurve:
         self.caption = caption
         self.caption.add_caption("Monomial", self.color)
         self.render = Aura(self.samples, self.thickness)
-
+        self.sample_ratio = sample_ratio
     ## Monomial Interpolation
     def calculate(self):
         numberOfPoints = len(self.controlPoints)
@@ -35,9 +35,12 @@ class MonomialInterpolatedCurve:
         self.controlPoints.sort(key=lambda p: p.x)
         try:
             coeficients = plu_solve(matrix, column_vector_Y)
-            for x in np.arange(self.controlPoints[0].x, self.controlPoints[-1].x, 0.5, dtype=np.float64):
+            for x in np.arange(self.controlPoints[0].x, self.controlPoints[-1].x, self.sample_ratio, dtype=np.float64):
                 y =  np.sum(np.power(x, exponents) * coeficients, dtype=np.float64)
                 self.samples.append(Point(x, y, self.thickness, self.color))
+            # for x in np.arange(0, 1200, self.sample_ratio, dtype=np.float64):
+            #     y =  np.sum(np.power(x, exponents) * coeficients, dtype=np.float64)
+            #     self.samples.append(Point(x, y, self.thickness, self.color))
         except:
             self.samples.clear()
             return 
