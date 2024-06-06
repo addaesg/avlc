@@ -10,8 +10,8 @@ def plu(A):
     
     #Allocate space for P, L, and U
     U = A.copy()
-    L = np.eye(n, dtype=np.double)
-    P = np.eye(n, dtype=np.double)
+    L = np.eye(n, dtype=np.single)
+    P = np.eye(n, dtype=np.single)
     
     #Loop over rows
     for i in range(n):
@@ -40,7 +40,7 @@ def forward_substitution(L, b):
     n = L.shape[0]
     
     #Allocating space for the solution vector
-    y = np.zeros_like(b, dtype=np.double);
+    y = np.zeros_like(b, dtype=np.single );
     
     #Here we perform the forward-substitution.  
     #Initializing  with the first row.
@@ -61,7 +61,7 @@ def back_substitution(U, y):
     n = U.shape[0]
     
     #Allocating space for the solution vector
-    x = np.zeros_like(y, dtype=np.double);
+    x = np.zeros_like(y, dtype=np.single );
 
     #Here we perform the back-substitution.  
     #Initializing with the last row.

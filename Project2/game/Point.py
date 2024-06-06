@@ -1,6 +1,7 @@
 import pygame
 import game.Color as Color
 from game.Caption import BoxCaption
+import numpy as np
 class Point: 
     def __init__(self, x, y, size = 15, color=Color.CYAN):
         self.x = x
@@ -15,7 +16,7 @@ class Point:
         return ((self.x - point.x)**2 + (self.y - point.y)**2)
     
     def pos(self):
-        return (self.x, self.y)
+        return (np.double(self.x), np.double(self.y))
     
     def move(self, point):
         self.x, self.y = point.pos()

@@ -24,9 +24,9 @@ class MonomialInterpolatedCurve:
         numberOfPoints = len(self.controlPoints)
         if(numberOfPoints == 0):
             return
-        exponents = np.arange(numberOfPoints, dtype=np.float64)
-        matrix = np.zeros((numberOfPoints, numberOfPoints), dtype=np.float64)
-        column_vector_Y = np.zeros(numberOfPoints, dtype=np.float64)
+        exponents = np.arange(numberOfPoints, dtype=np.single )
+        matrix = np.zeros((numberOfPoints, numberOfPoints), dtype=np.single )
+        column_vector_Y = np.zeros(numberOfPoints, dtype=np.single )
         for idx, p in enumerate(self.controlPoints):
             matrix[idx, :] = np.power(p.x, exponents)
             column_vector_Y[idx] = p.y
@@ -35,11 +35,11 @@ class MonomialInterpolatedCurve:
         self.controlPoints.sort(key=lambda p: p.x)
         try:
             coeficients = plu_solve(matrix, column_vector_Y)
-            for x in np.arange(self.controlPoints[0].x, self.controlPoints[-1].x, self.sample_ratio, dtype=np.float64):
-                y =  np.sum(np.power(x, exponents) * coeficients, dtype=np.float64)
+            for x in np.arange(self.controlPoints[0].x, self.controlPoints[-1].x, self.sample_ratio, dtype=np.single ):
+                y =  np.sum(np.power(x, exponents) * coeficients, dtype=np.single )
                 self.samples.append(Point(x, y, self.thickness, self.color))
-            # for x in np.arange(0, 1200, self.sample_ratio, dtype=np.float64):
-            #     y =  np.sum(np.power(x, exponents) * coeficients, dtype=np.float64)
+            # for x in np.arange(0, 1200, self.sample_ratio, dtype=np.single ):
+            #     y =  np.sum(np.power(x, exponents) * coeficients, dtype=np.single )
             #     self.samples.append(Point(x, y, self.thickness, self.color))
         except:
             self.samples.clear()
@@ -47,9 +47,14 @@ class MonomialInterpolatedCurve:
 
     def draw(self, screen):
         self.calculate()
-        self.render.draw(screen, self.samples)
+        #self.render.draw(screen, self.samples)
+        for i in range(1, len(self.samples)):
+            pygame.draw.line(screen, Color.WHITE, self.samples[i-1].pos(), self.samples[i].pos(), width=self.thickness + 1)
 
 
+        for i in range(1, len(self.samples)):
+            pygame.draw.line(screen, self.color, self.samples[i-1].pos(), self.samples[i].pos(), width=self.thickness)  
+      
 
 ## some other curves
 ## nice
@@ -68,7 +73,7 @@ class LagrangeCurve:
         self.samples.clear()
         n = len(self.controlPoints) - 1
         for t in np.arange(0, n, 0.005):
-            sample = np.zeros(2, float)
+            sample = np.zeros(2, np.single )
             for i in range(n+1):
                 control = self.controlPoints[i]
                 control = np.array([control.x, control.y])

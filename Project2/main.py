@@ -8,10 +8,8 @@ def main():
 
     captions = BoxCaption()
     controlPoints = ControlPoints([], 5, Color.BLACK, captions)
-    #bezierCurve = BezierCurve(controlPoints.points, Color.DARK_CYAN, 3, captions)
-    #lagradgeCurve = LagrangeCurve(controlPoints.points, Color.DARK_CYAN, 3, captions)
     thickness = 3
-    sample_ratio = 0.5
+    sample_ratio = 0.2
     monomialCurve = MonomialInterpolatedCurve(controlPoints.points, Color.DARK_GREY, 
                                               thickness, captions, sample_ratio)
 
